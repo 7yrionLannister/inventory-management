@@ -1,5 +1,5 @@
 package model;
 
-public interface IHashTable {
-
+public interface IHashTable<K, V> {
+	
 }
