@@ -5,19 +5,22 @@ import java.util.EmptyStackException;
 public class Stack<E> implements IStack<E> {
 	private Node<E> top;
 	private int size;
-	
+
 	/**Creates an empty stack
 	 * */
 	public Stack() {
 		size = 0;
 	}
-	
+
 	/**Returns the element at the top of the stack but does not modify it
 	 * @return The top element of the stack. If the stack is empty then its top is <b>null</b> and this is the retrieval
 	 * */
 	@Override
 	public E top() {
-		return top.getElement();
+		if(top != null) {
+			return top.getElement();
+		}
+		return null;
 	}
 
 	/**Determines whether this stack is empty
@@ -53,7 +56,7 @@ public class Stack<E> implements IStack<E> {
 		size--;
 		return item;
 	}
-	
+
 	/**Returns the size of the stack.
 	 * @return The total number of elements in the stack.
 	 * */

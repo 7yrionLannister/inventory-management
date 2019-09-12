@@ -1,6 +1,6 @@
 package model;
 
-//Un grupo de bloques tiene la variable de tipo T que indica que va a contener bloques T 
+
 public class SetOfBlocks<T> {
 	public final static int MAX_AMMOUNT_OF_BLOCKS = 64;
 
