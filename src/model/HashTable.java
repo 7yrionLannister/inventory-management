@@ -1,10 +1,16 @@
 package model;
 
 public class HashTable<K, V> implements IHashTable<K, V> {
-
+	private V[] items; //The array or table
+	private int storedItems;
+	
+	public HashTable() {
+		//TODO implement me
+	}
+	
 	@Override
 	public V search(K searchKey) {
-		// TODO Auto-generated method stub
+		// TODO ¿¿¿Usamos nuestra proppia funcion hash o hashCode de Object???
 		return null;
 	}
 
