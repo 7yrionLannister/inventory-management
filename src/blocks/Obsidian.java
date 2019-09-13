@@ -1,5 +1,7 @@
 package blocks;
 
-public class Obsidian {
+import model.SetOfBlocks;
+
+public class Obsidian extends SetOfBlocks {
 
 }

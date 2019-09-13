@@ -1,5 +1,7 @@
 package blocks;
 
-public class Gold {
+import model.SetOfBlocks;
+
+public class Gold extends SetOfBlocks {
 
 }

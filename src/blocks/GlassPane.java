@@ -1,5 +1,7 @@
 package blocks;
 
-public class GlassPane {
+import model.SetOfBlocks;
+
+public class GlassPane extends SetOfBlocks {
 
 }

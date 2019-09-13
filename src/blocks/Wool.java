@@ -1,5 +1,7 @@
 package blocks;
 
-public class Wool {
+import model.SetOfBlocks;
+
+public class Wool extends SetOfBlocks {
 
 }

@@ -1,5 +1,11 @@
 package blocks;
 
-public class Coal {
+import model.SetOfBlocks;
+
+public class Coal extends SetOfBlocks {
+
+	public Coal(int blocks) {
+		super(Coal.class.getCanonicalName(), blocks);
+	}
 
 }

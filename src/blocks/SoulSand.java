@@ -1,5 +1,7 @@
 package blocks;
 
-public class SoulSand {
+import model.SetOfBlocks;
+
+public class SoulSand extends SetOfBlocks {
 
 }

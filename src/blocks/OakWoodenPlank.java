@@ -1,5 +1,7 @@
 package blocks;
 
-public class OakWoodenPlank {
+import model.SetOfBlocks;
+
+public class OakWoodenPlank extends SetOfBlocks {
 
 }

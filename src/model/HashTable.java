@@ -1,11 +1,15 @@
 package model;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 public class HashTable<K, V> implements IHashTable<K, V> {
-	private V[] items; //The array or table
+	private HNode<K, V>[] items; //The array or table
 	private int storedItems;
 	
-	public HashTable() {
-		//TODO implement me
+	public HashTable(int size) {
+		items = (HNode<K, V>[])new HNode[size];
+		storedItems = 0;
 	}
 	
 	@Override

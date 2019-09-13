@@ -1,5 +1,7 @@
 package blocks;
 
-public class Granite {
+import model.SetOfBlocks;
+
+public class Granite extends SetOfBlocks {
 
 }

@@ -1,5 +1,7 @@
 package blocks;
 
-public class Iron {
+import model.SetOfBlocks;
+
+public class Iron extends SetOfBlocks {
 
 }

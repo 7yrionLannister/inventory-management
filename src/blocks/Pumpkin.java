@@ -1,5 +1,7 @@
 package blocks;
 
-public class Pumpkin {
+import model.SetOfBlocks;
+
+public class Pumpkin extends SetOfBlocks {
 
 }

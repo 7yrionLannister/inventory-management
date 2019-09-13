@@ -1,5 +1,7 @@
 package blocks;
 
-public class Sand {
+import model.SetOfBlocks;
+
+public class Sand extends SetOfBlocks {
 
 }

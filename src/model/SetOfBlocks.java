@@ -1,21 +1,22 @@
 package model;
 
 
-public class SetOfBlocks<T> {
+public class SetOfBlocks {
 	public final static int MAX_AMMOUNT_OF_BLOCKS = 64;
 
-	private T typeOfBlocks;
 	private int blocks;
-
+	private String typeOfBlocks;
+	
 	/**The constructor allows to create a new SetOfBlocks with the specified
 	 * @param blocks The initial number of blocks for this set<br>blocks >= 0 & blocks <= MAX_AMMOUNT_OF_BLOCKS
 	 * */
-	public SetOfBlocks(int blocks) {
+	public SetOfBlocks(String type, int blocks) {
 		if(blocks > MAX_AMMOUNT_OF_BLOCKS || blocks < 0) {
 			throw new IllegalArgumentException("Can't hold the ammount requested");
 		} else {
 			this.blocks = blocks;
 		}
+		typeOfBlocks = type;
 	}
 
 	/**Returns the amount of blocks stored in this set
@@ -23,13 +24,6 @@ public class SetOfBlocks<T> {
 	 * */
 	public int getBlocks() {
 		return blocks;
-	}
-	
-	/**Returns the type of blocks this set holds
-	 * @return The type T of elements this set holds
-	 * */
-	public T getTypeOfBlocks() {
-		return typeOfBlocks;
 	}
 	
 	/**The method allows to add blocks to the set
@@ -55,5 +49,9 @@ public class SetOfBlocks<T> {
 			throw new IllegalArgumentException("There are not enough blocks");
 		}
 		this.blocks -= blocks;
+	}
+
+	public String getTypeOfBlocks() {
+		return typeOfBlocks;
 	}
 }

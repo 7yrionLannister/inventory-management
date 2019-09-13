@@ -1,5 +1,7 @@
 package blocks;
 
-public class Furnace {
+import model.SetOfBlocks;
+
+public class Furnace extends SetOfBlocks {
 
 }

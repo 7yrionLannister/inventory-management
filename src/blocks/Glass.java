@@ -1,5 +1,7 @@
 package blocks;
 
-public class Glass {
+import model.SetOfBlocks;
+
+public class Glass extends SetOfBlocks {
 
 }

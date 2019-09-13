@@ -1,5 +1,7 @@
 package blocks;
 
-public class TNT {
+import model.SetOfBlocks;
+
+public class TNT extends SetOfBlocks {
 
 }

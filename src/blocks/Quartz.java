@@ -1,5 +1,7 @@
 package blocks;
 
-public class Quartz {
+import model.SetOfBlocks;
+
+public class Quartz extends SetOfBlocks {
 
 }

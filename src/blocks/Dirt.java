@@ -1,5 +1,7 @@
 package blocks;
 
-public class Dirt {
+import model.SetOfBlocks;
+
+public class Dirt extends SetOfBlocks {
 
 }

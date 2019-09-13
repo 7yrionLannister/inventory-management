@@ -1,5 +1,7 @@
 package blocks;
 
-public class HayBale {
+import model.SetOfBlocks;
+
+public class HayBale extends SetOfBlocks {
 
 }
