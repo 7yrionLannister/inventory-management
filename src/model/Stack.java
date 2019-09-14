@@ -28,7 +28,7 @@ public class Stack<E> implements IStack<E> {
 	 * */
 	@Override
 	public boolean isEmpty() {
-		return top == null;
+		return size == 0;
 	}
 
 	/**Adds an item to the stack
