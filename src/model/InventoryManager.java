@@ -11,7 +11,7 @@ public class InventoryManager {
 	private Queue<Stack<SetOfBlocks>> quickAccessBars;
 	private Stack<SetOfBlocks> currentQuickAccessBar;
 	private ArrayList<String> randomlyGeneratedKeys;
-	
+
 	private SecureRandom sr;
 
 	public InventoryManager() {
@@ -57,22 +57,41 @@ public class InventoryManager {
 			currentQuickAccessBar.pop();
 		}
 		if(currentQuickAccessBar.isEmpty()) {
-			//TODO swap between stacks
+			int searchKey = StringToNatural(top.getTypeOfBlocks());
+			swapBetweenStacks(keyRegistry.search(searchKey), currentQuickAccessBar);
 			try {
-				quickAccessBars.dequeue();
+				if(currentQuickAccessBar.isEmpty()) {
+					quickAccessBars.dequeue();
+					return;
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		while(remainingToConsume > 0 && !currentQuickAccessBar.isEmpty()) {
+		
+		if(remainingToConsume > 0 && !currentQuickAccessBar.isEmpty()) {
 			consume(remainingToConsume);
 		}
 	}
-	
-	public void swapBetweenStacks() {
-		
+
+	public void swapBetweenStacks(Stack<SetOfBlocks> src, Stack<SetOfBlocks> target) {
+		if(src == target) {
+			throw new IllegalArgumentException("Source and target stacks must be different");
+		}
+		SetOfBlocks topSrc = src.pop();
+		if(src == currentQuickAccessBar) {
+			while(!src.isEmpty()) {
+				target.push(src.pop());
+			}
+			target.push(topSrc);
+		} else {
+			while(target.getSize() < 9 && !src.isEmpty()) {
+				target.push(src.pop());
+			}
+			target.push(topSrc);
+		}
 	}
-	
+
 	/**The method allows to add blocks until the requested amount of blocks is added or the inventory fills
 	 * @param typeOfBlock The type of blocks to be added
 	 * @param blocks The total number of blocks to be added
@@ -91,12 +110,12 @@ public class InventoryManager {
 		}
 		randomlyGeneratedKeys.add(randomKey);
 		int intKey = StringToNatural(randomKey);
-		
+
 		int blocksToBeAdded = Math.min(blocks, SetOfBlocks.MAX_AMMOUNT_OF_BLOCKS);
 		SetOfBlocks blocksOnTop = new SetOfBlocks(randomKey, blocksToBeAdded);
 		sob.push(blocksOnTop);
 		inventory.add(intKey, randomKey, blocksOnTop);
-		
+
 		if(blocksToBeAdded < blocks && inventory.getStoredItems() < inventory.getItems().length) {
 			//repeat until inventory is full or every block is added
 			generateKeyAndAdd(typeOfBlock, sob, blocks-blocksToBeAdded);
