@@ -23,12 +23,12 @@ public class OpenAddressingHashTableTest {
 	public void hashFunctionTest() {
 		setupStage1();
 		for (int i = 0; i < 1000; i++) {
-			int h = ht.hashFunction(false, i);
+			int h = ht.hashFunction(false, i, i);
 			assertTrue(h >= 0 && h < ht.getItems().length, "The hash function should return valid table slots");
 		}
 		
 		for(int i = 0; i < ht.getItems().length; i++) {
-			int h = ht.hashFunction(false, i);
+			int h = ht.hashFunction(false, i, i);
 			assertTrue(h >= 0 && h < ht.getItems().length, "The hash function should return valid table slots: ("+h+")");
 			ht.add(i, i, (int) (Math.random()*80));
 		}
@@ -38,10 +38,10 @@ public class OpenAddressingHashTableTest {
 	public void addAndSearchTest() {
 		setupStage1();
 		for(int i = 0; i < ht.getItems().length; i++) {
-			int h = ht.hashFunction(false, i);
+			int h = ht.hashFunction(false, i, i);
 			assertTrue(h >= 0 && h < ht.getItems().length, "The hash function should return valid table slots: ("+h+")");
 			ht.add(i, i, (int) (Math.random()*80));
-			assertNotNull(ht.search(i), "The element was just added so it should have been found");
+			assertNotNull(ht.search(i, i), "The element was just added so it should have been found");
 		}
 	}
 	
@@ -49,8 +49,8 @@ public class OpenAddressingHashTableTest {
 	public void removeTest() {
 		addAndSearchTest();
 		for (int i = 0; i < ht.getItems().length; i++) {
-			ht.remove(i);
-			assertNull(ht.search(i), "The element with key i was removed so it should not have been found");
+			ht.remove(i, i);
+			assertNull(ht.search(i, i), "The element with key i was removed so it should not have been found");
 		}
 	}
 }

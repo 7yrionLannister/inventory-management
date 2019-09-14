@@ -16,8 +16,8 @@ public class OpenAddressingHashTable<K, V> implements IHashTable<K, V> {
 	}
 
 	@Override
-	public V search(int searchKey) {
-		int h = hashFunction(true, searchKey);
+	public V search(int intKey, K key) {
+		int h = hashFunction(true, intKey, key);
 		if(h != -1 && !DELETED[h]) {
 			return items[h].getValue();
 		}
@@ -25,8 +25,8 @@ public class OpenAddressingHashTable<K, V> implements IHashTable<K, V> {
 	}
 
 	@Override
-	public V remove(int searchKey) {
-		int h = hashFunction(true, searchKey);
+	public V remove(int intKey, K key) {
+		int h = hashFunction(true, intKey, key);
 		if(h != -1 && !DELETED[h]) {
 			DELETED[h] = true;
 			storedItems--;
@@ -37,7 +37,7 @@ public class OpenAddressingHashTable<K, V> implements IHashTable<K, V> {
 
 	@Override
 	public boolean add(int seachKey, K key, V value) {
-		int h = hashFunction(false, seachKey);
+		int h = hashFunction(false, seachKey, key);
 		if(h != -1) {
 			items[h] = new HNode<>(seachKey, key, value);
 			storedItems++;
@@ -68,18 +68,18 @@ public class OpenAddressingHashTable<K, V> implements IHashTable<K, V> {
 	 * @return An integer representing the slot computed by the hash function<br><b>-1</b> if  
 	 * @throws Exception If the key contains an invalid character
 	 * */
-	public int hashFunction(boolean search, int key) {
+	public int hashFunction(boolean search, int intKey, K key) {
 		int hashCode = -1;
 
 		int m = items.length;
 
-		int hash1 = ((int) (m*((key*A) % 1))) % items.length;
+		int hash1 = ((int) (m*((intKey*A) % 1))) % items.length;
 
-		if((search && items[hash1] != null && items[hash1].getIntKey() == key) 
+		if((search && items[hash1] != null && items[hash1].getKey().equals(key)) 
 				|| (!search && items[hash1] == null || (DELETED[hash1] && items[hash1].getKey().equals(key)))) {
 			hashCode = hash1;
 		} else {
-			int hash2 = key % m;
+			int hash2 = intKey % m;
 			int totalHash = (hash1+(int)(A*hash2)) % m;
 			int i = 1;
 			ArrayList<Integer> visited = new ArrayList<>();
@@ -94,7 +94,7 @@ public class OpenAddressingHashTable<K, V> implements IHashTable<K, V> {
 				if(items[totalHash] == null && !search) {
 					found = true;
 					break;
-				} else if( search && items[totalHash] != null && items[totalHash].getIntKey() == key) {
+				} else if( search && items[totalHash] != null && items[totalHash].getKey().equals(key)) {
 					found = true;
 					break;
 				}

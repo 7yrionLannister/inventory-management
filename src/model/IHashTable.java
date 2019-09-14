@@ -1,7 +1,7 @@
 package model;
 
 public interface IHashTable<K, V> {
-	V search(int searchKey);
-	V remove(int searchKey);
-	boolean add(int seachKey, K key, V value);
+	V search(int intKey, K key);
+	V remove(int intKey, K key);
+	boolean add(int intKey, K key, V value);
 }

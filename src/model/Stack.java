@@ -63,4 +63,15 @@ public class Stack<E> implements IStack<E> {
 	public int getSize() {
 		return size;
 	}
+	
+	@Override
+	public String toString() {
+		String rt = "";
+		Node<E> node = top;
+		while(node != null) {
+			rt += node+"\n";
+			node = node.getNextNode();
+		}
+		return rt;
+	}
 }

@@ -59,6 +59,9 @@ public class Queue<E> implements IQueue<E> {
 		}
 		E e = front.getElement();
 		front = front.getNextNode();
+		if(front == null) {
+			back = front;
+		}
 		size--;
 		return e;
 	}

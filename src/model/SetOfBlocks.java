@@ -35,9 +35,15 @@ public class SetOfBlocks {
 		if(blocks < 0) {
 			throw new IllegalArgumentException("The ammount of blocks to add must be positive");
 		}
-		int add = MAX_AMMOUNT_OF_BLOCKS - this.blocks;
-		blocks += add;
-		return blocks - add;
+		
+		int toAdd = -1;
+		int freeSpace = MAX_AMMOUNT_OF_BLOCKS-this.blocks;
+		if(freeSpace > 0) {
+			toAdd = Math.min(blocks, freeSpace);
+			blocks -= toAdd;
+			this.blocks += toAdd;
+		}
+		return blocks;
 	}
 	
 	/**The method allows to take blocks out of the set
@@ -53,5 +59,10 @@ public class SetOfBlocks {
 
 	public String getTypeOfBlocks() {
 		return typeOfBlocks;
+	}
+	
+	@Override
+	public String toString() {
+		return "~"+typeOfBlocks.substring(0, typeOfBlocks.length() - 5) + "," + blocks+"~";
 	}
 }

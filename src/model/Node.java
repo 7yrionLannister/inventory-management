@@ -23,4 +23,9 @@ public class Node<E> {
 	public void setNextNode(Node<E> nextNode) {
 		this.nextNode = nextNode;
 	}
+	
+	@Override
+	public String toString() {
+		return element+"";
+	}
 }
