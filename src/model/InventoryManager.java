@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import blocks.*;
 
 public class InventoryManager {
-	private HashTable<String, Stack<SetOfBlocks>> keyRegistry;
-	private HashTable<String, SetOfBlocks> inventory;
+	private OpenAddressingHashTable<String, Stack<SetOfBlocks>> keyRegistry;
+	private OpenAddressingHashTable<String, SetOfBlocks> inventory;
 	private Queue<Stack<SetOfBlocks>> quickAccessBars;
 	private Stack<SetOfBlocks> currentQuickAccessBar;
 	private ArrayList<String> randomlyGeneratedKeys;
@@ -15,8 +15,8 @@ public class InventoryManager {
 	private SecureRandom sr;
 
 	public InventoryManager() {
-		keyRegistry = new HashTable<>(27);
-		inventory = new HashTable<>(27);
+		keyRegistry = new OpenAddressingHashTable<>(27);
+		inventory = new OpenAddressingHashTable<>(27);
 		quickAccessBars = new Queue<>();
 		randomlyGeneratedKeys = new ArrayList<>();
 		sr = new SecureRandom();
@@ -122,19 +122,19 @@ public class InventoryManager {
 		}
 	}
 
-	public HashTable<String, Stack<SetOfBlocks>> getKeyRegistry() {
+	public OpenAddressingHashTable<String, Stack<SetOfBlocks>> getKeyRegistry() {
 		return keyRegistry;
 	}
 
-	public void setKeyRegistry(HashTable<String, Stack<SetOfBlocks>> keyRegistry) {
+	public void setKeyRegistry(OpenAddressingHashTable<String, Stack<SetOfBlocks>> keyRegistry) {
 		this.keyRegistry = keyRegistry;
 	}
 
-	public HashTable<String, SetOfBlocks> getInventory() {
+	public OpenAddressingHashTable<String, SetOfBlocks> getInventory() {
 		return inventory;
 	}
 
-	public void setInventory(HashTable<String, SetOfBlocks> inventory) {
+	public void setInventory(OpenAddressingHashTable<String, SetOfBlocks> inventory) {
 		this.inventory = inventory;
 	}
 
