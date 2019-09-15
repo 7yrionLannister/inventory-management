@@ -11,11 +11,33 @@ public class InventoryManager {
 	private Queue<Stack<SetOfBlocks>> quickAccessBars2;
 	private ArrayList<String> randomlyGeneratedKeys;
 
+	public final static IntegerTranslator<String> integerTranslator = new IntegerTranslator<String>() {
+		/**The method allows to obtain an integer representation of key
+		 * @param The String to convert to a natural number<br>Characters in key must be in <b>ASCII{46..122}</b> set
+		 * @return An integer representing key
+		 * @throws IllegalArgumentException if key contains characters not allowed
+		 * */
+		@Override
+		public int keyToInteger(String key) {
+			int length = key.length();
+			int intKey = 0;
+			for (int i = 0; i < length; i++) {
+				char chari = key.charAt(i);
+				if(chari > 122 || chari < 46) {
+					throw new IllegalArgumentException("The key contains an invalid character: " + chari);
+				} else {
+					intKey += chari*Math.pow(128, length - i - 1);
+				}
+			}
+			return intKey;
+		}
+	};
+
 	private SecureRandom sr;
 
 	public InventoryManager() {
-		keyRegistry = new OpenAddressingHashTable<>(27);
-		inventory = new OpenAddressingHashTable<>(27);
+		keyRegistry = new OpenAddressingHashTable<>(27, integerTranslator);
+		inventory = new OpenAddressingHashTable<>(27, integerTranslator);
 		quickAccessBars = new Queue<>();
 		quickAccessBars2 = new Queue<>();
 		randomlyGeneratedKeys = new ArrayList<>();
@@ -31,15 +53,14 @@ public class InventoryManager {
 	 * @throws IllegalArgumentException if amount < 0
 	 * */
 	public void collect(String typeOfBlock, int amount) throws Exception {
-		int key = StringToNatural(typeOfBlock);
-		Stack<SetOfBlocks>  registryStack = keyRegistry.search(key, typeOfBlock);
+		Stack<SetOfBlocks>  registryStack = keyRegistry.search(typeOfBlock);
 		if(registryStack == null && inventory.getStoredItems() < inventory.getItems().length) {
 			//The registry stack for the type typeOfBlock is not in the registry hash table
 			//But the inventory hash table does have space to allocate a new type of block
 			//So a stack is created, mapped and added to the registry hash table and later
 			//to the inventory hash table with the random key
 			registryStack = new Stack<SetOfBlocks>();
-			keyRegistry.add(key, typeOfBlock, registryStack);
+			keyRegistry.add(typeOfBlock, registryStack);
 			quickAccessBars.enqueue(registryStack);
 		}
 		generateKeyAndAdd(typeOfBlock, registryStack, amount);
@@ -49,47 +70,37 @@ public class InventoryManager {
 	 * @param amount The number of blocks to consume<br>amount < currentQuickAccessBar.size()
 	 * @throws IllegalArgumentException if the requested number of blocks exceeds the number of blocks in the inventory
 	 * */
-	public void consume(int amount) {
-		SetOfBlocks top = quickAccessBars.front().top();
-		int toConsume = Math.min(top.getBlocks(), amount);
+	public void consume(int amount) throws Exception {
+		//TODO check if top is Dirt or Dirt+random
+		Stack<SetOfBlocks> currentQAB = quickAccessBars.front();
+		SetOfBlocks topOfFront = currentQAB.top();
+		SetOfBlocks backup = topOfFront;
+		int toConsume = Math.min(topOfFront.getBlocks(), amount);
 		int remainingToConsume = amount - toConsume;
-		top.consume(toConsume);
-		if(top.getBlocks() == 0) {
-			quickAccessBars.front().pop();
+		topOfFront.consume(toConsume);
+		
+		String typeOfBlocks = topOfFront.getTypeOfBlocks();
+		
+		if(topOfFront.getBlocks() == 0) {
+			topOfFront = currentQAB.pop();
+			randomlyGeneratedKeys.remove(topOfFront.getTypeOfBlocks());
+			inventory.remove(typeOfBlocks);
+			topOfFront = currentQAB.top();
 		}
-		if(quickAccessBars.front().isEmpty()) {
-			int searchKey = StringToNatural(top.getTypeOfBlocks());
-			swapBetweenStacks(keyRegistry.search(searchKey, top.getTypeOfBlocks()), quickAccessBars.front());
-			try {
-				if(quickAccessBars.front().isEmpty()) {
-					quickAccessBars.dequeue();
-					return;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		if(topOfFront == null) {
+			topOfFront = backup;
+		}
+		if(currentQAB.isEmpty()) {
+			//It's not possible to continue consuming
+			inventory.remove(typeOfBlocks);
+			keyRegistry.remove(typeOfBlocks.substring(0, topOfFront.getTypeOfBlocks().length()-5));
+			quickAccessBars.dequeue();
+			return;
 		}
 
 		if(remainingToConsume > 0 && !quickAccessBars.front().isEmpty()) {
+			//Consume until everything last or there are not available blocks to consume
 			consume(remainingToConsume);
-		}
-	}
-
-	private void swapBetweenStacks(Stack<SetOfBlocks> src, Stack<SetOfBlocks> target) {
-		if(src == target) {
-			throw new IllegalArgumentException("Source and target stacks must be different");
-		}
-		SetOfBlocks topSrc = src.pop();
-		if(src == quickAccessBars.front()) {
-			while(!src.isEmpty()) {
-				target.push(src.pop());
-			}
-			target.push(topSrc);
-		} else {
-			while(target.getSize() < 9 && !src.isEmpty()) {
-				target.push(src.pop());
-			}
-			target.push(topSrc);
 		}
 	}
 
@@ -110,7 +121,6 @@ public class InventoryManager {
 			}
 		}
 		randomlyGeneratedKeys.add(randomKey);
-		int intKey = StringToNatural(randomKey);
 
 		int remaining = blocks;
 		if(!sob.isEmpty()) {
@@ -121,12 +131,15 @@ public class InventoryManager {
 		if(blocksToBeAdded > 0) {
 			SetOfBlocks blocksOnTop = new SetOfBlocks(randomKey, blocksToBeAdded);
 			sob.push(blocksOnTop);
-			inventory.add(intKey, randomKey, blocksOnTop);
+			inventory.add(randomKey, blocksOnTop);
 		}
 
 		if(remaining < blocks && inventory.getStoredItems() < inventory.getItems().length) {
 			//repeat until inventory is full or every block is added
 			generateKeyAndAdd(typeOfBlock, sob, remaining);
+		} else if (inventory.getStoredItems() == inventory.getItems().length) {
+			//Throw the exception to let the user know that the hash table is full
+			inventory.add(randomKey, null);
 		}
 	}
 
@@ -157,40 +170,11 @@ public class InventoryManager {
 	public void nextQuickAccessBar() throws Exception {
 		Stack<SetOfBlocks> current = quickAccessBars.dequeue(); //temporal to pass elements in the stack to the hash table
 		quickAccessBars2.enqueue(current); //to maintain order
-		String typeOfBlocks = current.top().getTypeOfBlocks(); //the type of blocks when swapping
-		typeOfBlocks = typeOfBlocks.substring(0, typeOfBlocks.length()-5); //the type of blocks when swapping without the random string appended
-		int key = StringToNatural(typeOfBlocks); //the integer representation of the type of block being passed from the stack in the queue to the stack in the hash table
-		Stack<SetOfBlocks> targetInKeyRegistry = keyRegistry.search(key, typeOfBlocks); //search if there is a stack for these elements in the registry hash table
-		if(targetInKeyRegistry == null) { //if there is not a stack for the elements in the registry hash table then create one and add it
-			targetInKeyRegistry = new Stack<SetOfBlocks>();
-			keyRegistry.add(key, typeOfBlocks, targetInKeyRegistry);
-		}
-
-		swapBetweenStacks(current, targetInKeyRegistry); //finally swap
-
+		
 		if(quickAccessBars.isEmpty()) { //exchange the queues if the main of them gets empty
 			Queue<Stack<SetOfBlocks>> temp = quickAccessBars;
 			quickAccessBars = quickAccessBars2;
 			quickAccessBars2 = temp;
 		}
-	}
-
-	/**The method allows to obtain an integer representation of key
-	 * @param The String to convert to a natural number<br>Characters in key must be in <b>ASCII{46..122}</b> set
-	 * @return An integer representing key
-	 * @throws IllegalArgumentException if key contains characters not allowed
-	 * */
-	public int StringToNatural(String key) {
-		int length = key.length();
-		int intKey = 0;
-		for (int i = 0; i < length; i++) {
-			char chari = key.charAt(i);
-			if(chari > 122 || chari < 46) {
-				throw new IllegalArgumentException("The key contains an invalid character: " + chari);
-			} else {
-				intKey += chari*Math.pow(128, length - i - 1);
-			}
-		}
-		return intKey;
 	}
 }

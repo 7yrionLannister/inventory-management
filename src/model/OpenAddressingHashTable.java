@@ -8,16 +8,18 @@ public class OpenAddressingHashTable<K, V> implements IHashTable<K, V> {
 	private HNode<K, V>[] items; //The array or table
 	private boolean[] DELETED; 
 	private int storedItems;
+	private IntegerTranslator<K> integerTranslator;
 
-	public OpenAddressingHashTable(int size) {
+	public OpenAddressingHashTable(int size, IntegerTranslator<K> it) {
 		items = (HNode<K, V>[])new HNode[size];
 		DELETED = new boolean[size];
 		storedItems = 0;
+		integerTranslator = it;
 	}
 
 	@Override
-	public V search(int intKey, K key) {
-		int h = hashFunction(true, intKey, key);
+	public V search(K key) {
+		int h = hashFunction(true, key);
 		if(h != -1 && !DELETED[h]) {
 			return items[h].getValue();
 		}
@@ -25,8 +27,8 @@ public class OpenAddressingHashTable<K, V> implements IHashTable<K, V> {
 	}
 
 	@Override
-	public V remove(int intKey, K key) {
-		int h = hashFunction(true, intKey, key);
+	public V remove(K key) {
+		int h = hashFunction(true, key);
 		if(h != -1 && !DELETED[h]) {
 			DELETED[h] = true;
 			storedItems--;
@@ -36,15 +38,16 @@ public class OpenAddressingHashTable<K, V> implements IHashTable<K, V> {
 	}
 
 	@Override
-	public boolean add(int seachKey, K key, V value) {
-		int h = hashFunction(false, seachKey, key);
+	public void add(K key, V value) {
+		if(storedItems == items.length) {
+			throw new IllegalStateException("The hash table is already full");
+		}
+		int h = hashFunction(false, key);
 		if(h != -1) {
-			items[h] = new HNode<>(seachKey, key, value);
+			items[h] = new HNode<>(key, value);
 			storedItems++;
 			DELETED[h] = false;
-			return true;
 		}
-		return false;
 	}
 
 	public HNode<K, V>[] getItems() {
@@ -68,9 +71,9 @@ public class OpenAddressingHashTable<K, V> implements IHashTable<K, V> {
 	 * @return An integer representing the slot computed by the hash function<br><b>-1</b> if  
 	 * @throws Exception If the key contains an invalid character
 	 * */
-	public int hashFunction(boolean search, int intKey, K key) {
+	public int hashFunction(boolean search, K key) {
 		int hashCode = -1;
-
+		int intKey = integerTranslator.keyToInteger(key);
 		int m = items.length;
 
 		int hash1 = ((int) (m*((intKey*A) % 1))) % items.length;
@@ -85,7 +88,7 @@ public class OpenAddressingHashTable<K, V> implements IHashTable<K, V> {
 			ArrayList<Integer> visited = new ArrayList<>();
 			visited.add(hash1);
 			int possibleDeletedSlot = -1;
-			
+
 			boolean found = false;
 			while (visited.size() < m) {
 				if(!search && possibleDeletedSlot == -1 && DELETED[totalHash] && !items[totalHash].getKey().equals(key)) {
@@ -106,9 +109,9 @@ public class OpenAddressingHashTable<K, V> implements IHashTable<K, V> {
 			}
 
 			if(found) {
-			hashCode = totalHash;
+				hashCode = totalHash;
 			} else if(possibleDeletedSlot != -1) {
-			hashCode = possibleDeletedSlot;
+				hashCode = possibleDeletedSlot;
 			}
 		}
 

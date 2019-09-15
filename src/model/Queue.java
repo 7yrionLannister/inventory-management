@@ -72,4 +72,15 @@ public class Queue<E> implements IQueue<E> {
 	public int getSize() {
 		return size;
 	}
+	
+	@Override
+	public String toString() {
+		Node<E> node = front;
+		String rt = "";
+		while(node != null) {
+			rt += node+"\n";
+			node = node.getNextNode();
+		}
+		return rt;
+	}
 }
