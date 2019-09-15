@@ -63,6 +63,6 @@ public class SetOfBlocks {
 	
 	@Override
 	public String toString() {
-		return "~"+typeOfBlocks.substring(0, typeOfBlocks.length() - 5) + "," + blocks+"~";
+		return typeOfBlocks + "," + blocks;
 	}
 }
