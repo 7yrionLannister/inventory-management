@@ -2,8 +2,10 @@ package model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
+
 
 public class InventoryManagerTest {
 	private InventoryManager im;
@@ -23,7 +25,7 @@ public class InventoryManagerTest {
 		im.collect("Dirt", (int)blocks);
 		itemsInKeyRegistry++;
 		itemsInInventory += Math.ceil(blocks/SetOfBlocks.MAX_AMMOUNT_OF_BLOCKS);
-		//System.out.println(registry.search("Dirt"));
+		System.out.println(registry.search("Dirt"));
 		assertTrue(registry.getStoredItems() == itemsInKeyRegistry, "The amount of elements in here (" + registry.getStoredItems() + ") is not the expected: ("+ itemsInKeyRegistry+")");
 		assertTrue(inventory.getStoredItems() == itemsInInventory, "The amount of elements in here (" + inventory.getStoredItems() + ") is not the expected: ("+itemsInInventory+")");
 
@@ -31,7 +33,7 @@ public class InventoryManagerTest {
 		im.collect("Andesite", (int)blocks);
 		itemsInKeyRegistry++;
 		itemsInInventory += Math.ceil(blocks/SetOfBlocks.MAX_AMMOUNT_OF_BLOCKS);
-		//System.out.println(registry.search("Andesite"));
+		System.out.println(registry.search("Andesite"));
 		assertTrue(registry.getStoredItems() == itemsInKeyRegistry, "The amount of elements in here (" + registry.getStoredItems() + ") is not the expected: ("+ itemsInKeyRegistry+")");
 		assertTrue(inventory.getStoredItems() == itemsInInventory, "The amount of elements in here (" + inventory.getStoredItems() + ") is not the expected: ("+itemsInInventory+")");
 
@@ -39,7 +41,7 @@ public class InventoryManagerTest {
 		im.collect("Andesite", (int)blocks);
 		//itemsInKeyRegistry does not change as the stack in the key registry hash table has a setOfBlocks with 44 available spaces
 		itemsInInventory += Math.ceil(blocks/SetOfBlocks.MAX_AMMOUNT_OF_BLOCKS);
-		//System.out.println(registry.search("Andesite"));
+		System.out.println(registry.search("Andesite"));
 		assertTrue(registry.getStoredItems() == itemsInKeyRegistry, "The amount of elements in here (" + registry.getStoredItems() + ") is not the expected: ("+ itemsInKeyRegistry+")");
 		assertTrue(inventory.getStoredItems() == itemsInInventory, "The amount of elements in here (" + inventory.getStoredItems() + ") is not the expected: ("+itemsInInventory+")");
 
@@ -47,7 +49,7 @@ public class InventoryManagerTest {
 		im.collect("Cobblestone", (int)blocks);
 		itemsInKeyRegistry++;
 		itemsInInventory += Math.ceil(blocks/SetOfBlocks.MAX_AMMOUNT_OF_BLOCKS);
-		//System.out.println(registry.search("Cobblestone"));
+		System.out.println(registry.search("Cobblestone"));
 		assertTrue(registry.getStoredItems() == itemsInKeyRegistry, "The amount of elements in here (" + registry.getStoredItems() + ") is not the expected: ("+ itemsInKeyRegistry+")");
 		assertTrue(inventory.getStoredItems() == itemsInInventory, "The amount of elements in here (" + inventory.getStoredItems() + ") is not the expected: ("+itemsInInventory+")");
 
@@ -111,23 +113,35 @@ public class InventoryManagerTest {
 	public void gameSimulationTest() throws Exception {
 		consumeTest();
 		
+		System.out.println("ABRE BANDERA");
 		OpenAddressingHashTable<String, Stack<SetOfBlocks>> registry = im.getKeyRegistry();
 		OpenAddressingHashTable<String, SetOfBlocks> inventory = im.getInventory();
+		
+		System.out.println(registry.search("Dirt"));
+		System.out.println(registry.search("Andesite"));
+		System.out.println(registry.search("Cobblestone"));
+		System.out.println(registry.search("Bookshelf"));
+		
 		int itemsInKeyRegistry = 0;
 		int itemsInInventory = 0;
 		double blocks = 200;
+
 		im.collect("Dirt", (int)blocks);
+		System.out.println("despues  " + inventory.getStoredItems());
+		System.out.println(Arrays.toString(inventory.getItems()));
+
 		itemsInKeyRegistry++;
 		itemsInInventory += Math.ceil(blocks/SetOfBlocks.MAX_AMMOUNT_OF_BLOCKS);
-		//System.out.println(registry.search("Dirt"));
+		System.out.println(registry.search("Dirt"));
 		assertTrue(registry.getStoredItems() == itemsInKeyRegistry, "The amount of elements in here (" + registry.getStoredItems() + ") is not the expected: ("+ itemsInKeyRegistry+")");
 		assertTrue(inventory.getStoredItems() == itemsInInventory, "The amount of elements in here (" + inventory.getStoredItems() + ") is not the expected: ("+itemsInInventory+")");
-
+		System.out.println("CIERRA BANDERA");
+		
 		blocks = 300;
 		im.collect("Andesite", (int)blocks);
 		itemsInKeyRegistry++;
 		itemsInInventory += Math.ceil(blocks/SetOfBlocks.MAX_AMMOUNT_OF_BLOCKS);
-		//System.out.println(registry.search("Andesite"));
+		System.out.println(registry.search("Andesite"));
 		assertTrue(registry.getStoredItems() == itemsInKeyRegistry, "The amount of elements in here (" + registry.getStoredItems() + ") is not the expected: ("+ itemsInKeyRegistry+")");
 		assertTrue(inventory.getStoredItems() == itemsInInventory, "The amount of elements in here (" + inventory.getStoredItems() + ") is not the expected: ("+itemsInInventory+")");
 
@@ -135,7 +149,7 @@ public class InventoryManagerTest {
 		im.collect("Andesite", (int)blocks);
 		//itemsInKeyRegistry does not change as the stack in the key registry hash table has a setOfBlocks with 44 available spaces
 		itemsInInventory += Math.ceil(blocks/SetOfBlocks.MAX_AMMOUNT_OF_BLOCKS);
-		//System.out.println(registry.search("Andesite"));
+		System.out.println(registry.search("Andesite"));
 		assertTrue(registry.getStoredItems() == itemsInKeyRegistry, "The amount of elements in here (" + registry.getStoredItems() + ") is not the expected: ("+ itemsInKeyRegistry+")");
 		assertTrue(inventory.getStoredItems() == itemsInInventory, "The amount of elements in here (" + inventory.getStoredItems() + ") is not the expected: ("+itemsInInventory+")");
 
@@ -143,7 +157,7 @@ public class InventoryManagerTest {
 		im.collect("Cobblestone", (int)blocks);
 		itemsInKeyRegistry++;
 		itemsInInventory += Math.ceil(blocks/SetOfBlocks.MAX_AMMOUNT_OF_BLOCKS);
-		//System.out.println(registry.search("Cobblestone"));
+		System.out.println(registry.search("Cobblestone"));
 		assertTrue(registry.getStoredItems() == itemsInKeyRegistry, "The amount of elements in here (" + registry.getStoredItems() + ") is not the expected: ("+ itemsInKeyRegistry+")");
 		assertTrue(inventory.getStoredItems() == itemsInInventory, "The amount of elements in here (" + inventory.getStoredItems() + ") is not the expected: ("+itemsInInventory+")");
 

@@ -83,8 +83,7 @@ public class InventoryManager {
 		
 		if(topOfFront.getBlocks() == 0) {
 			topOfFront = currentQAB.pop();
-			randomlyGeneratedKeys.remove(topOfFront.getTypeOfBlocks());
-			inventory.remove(typeOfBlocks);
+			randomlyGeneratedKeys.remove(typeOfBlocks);
 			topOfFront = currentQAB.top();
 		}
 		if(topOfFront == null) {
@@ -92,9 +91,14 @@ public class InventoryManager {
 		}
 		if(currentQAB.isEmpty()) {
 			//It's not possible to continue consuming
-			inventory.remove(typeOfBlocks);
+			//inventory.remove(typeOfBlocks);System.out.println("remuevo de inventario: "+typeOfBlocks);
 			keyRegistry.remove(typeOfBlocks.substring(0, topOfFront.getTypeOfBlocks().length()-5));
 			quickAccessBars.dequeue();
+			if(quickAccessBars.isEmpty()) { //exchange the queues if the main of them gets empty
+				Queue<Stack<SetOfBlocks>> temp = quickAccessBars;
+				quickAccessBars = quickAccessBars2;
+				quickAccessBars2 = temp;
+			}
 			return;
 		}
 
@@ -119,8 +123,10 @@ public class InventoryManager {
 			for (int i = 0; i < 5; i++) {
 				sequence += (char) (sr.nextInt(46)+77);
 			}
+			randomKey = typeOfBlock + sequence;
 		}
-		randomlyGeneratedKeys.add(randomKey);
+		//TODO descomentar si no funciona o dar ctrl z hasta la muerte
+		//randomlyGeneratedKeys.add(randomKey);
 
 		int remaining = blocks;
 		if(!sob.isEmpty()) {
@@ -132,6 +138,7 @@ public class InventoryManager {
 			SetOfBlocks blocksOnTop = new SetOfBlocks(randomKey, blocksToBeAdded);
 			sob.push(blocksOnTop);
 			inventory.add(randomKey, blocksOnTop);
+			randomlyGeneratedKeys.add(randomKey);
 		}
 
 		if(remaining < blocks && inventory.getStoredItems() < inventory.getItems().length) {
@@ -176,5 +183,9 @@ public class InventoryManager {
 			quickAccessBars = quickAccessBars2;
 			quickAccessBars2 = temp;
 		}
+	}
+
+	public ArrayList<String> getRandomlyGeneratedKeys() {
+		return randomlyGeneratedKeys;
 	}
 }

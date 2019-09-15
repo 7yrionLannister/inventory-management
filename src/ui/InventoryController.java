@@ -18,6 +18,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import model.InventoryManager;
+import model.OpenAddressingHashTable;
+import model.SetOfBlocks;
 
 public class InventoryController {
 
@@ -75,7 +77,7 @@ public class InventoryController {
 		actionToggleGroup.getToggles().get(0).setUserData("Collect");
 		actionToggleGroup.getToggles().get(1).setUserData("Consume");
 		actionToggleGroup.selectToggle(actionToggleGroup.getToggles().get(0));
-		
+
 		//TODO seccion de pruebas
 		inventoryGridPane.getChildren().sort(new Comparator<Node>() {
 
@@ -88,7 +90,7 @@ public class InventoryController {
 				}
 				return 0;
 			}
-			
+
 		});
 	}
 
@@ -106,11 +108,11 @@ public class InventoryController {
 			try {
 				im.consume(Integer.parseInt(amountTextField.getText()));
 			} catch (Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			break;
 		}
-		//refreshImagesAndLabels();
+		refreshImagesAndLabels();
 	}
 
 	@FXML
@@ -131,13 +133,12 @@ public class InventoryController {
 
 	@FXML
 	public void nextQuickAccessBarButtonPressed(ActionEvent event) {
-		System.out.println("next");
 		try {
 			im.nextQuickAccessBar();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		refreshImagesAndLabels();
 	}
 
@@ -155,12 +156,12 @@ public class InventoryController {
 			((ImageView)quickAccessBarNodes.get(i)).setImage(null);
 			((Label)quickAccessBarNodes.get(i+9)).setText("0");
 		}
-		System.out.println("\n");
 		if(!im.getQuickAccessBars().isEmpty()) {
 			String[] cqab = im.getQuickAccessBars().front().toString().split("\n");
 			for (int i = cqab.length - 1, j = 8; i > -1 && j > -1; i--, j--) {
 				String[] node = cqab[i].split(",");
 				ImageView image = (ImageView)quickAccessBar.getChildren().get(j);
+				node[0] = node[0].substring(0, node[0].length() - 5);
 				if(node[0].equals("Chest")) {
 					image.setImage(new Image(new File("images" + File.separator + node[0] + ".gif").toURI().toString()));
 				} else {
@@ -171,33 +172,35 @@ public class InventoryController {
 				amountLabel.setText(node[1]);
 			}
 		}
-		
-		ObservableList<Node> inventoryNodes = inventoryGridPane.getChildren();
-		//inventoryGridPane.get
-		
-		System.out.println("+++"+inventoryGridPane.getChildren().size());
+
+		ObservableList<Node> gInventoryNodes = inventoryGridPane.getChildren();
+
 		int nrows = 3;
 		int ncols = 9;
 		for(int i = 0; i < nrows; i++) { //Clear
 			for (int j = 0; j < ncols; j++) {
-				((ImageView)inventoryNodes.get(i * ncols + j)).setImage(null);
-				((Label)inventoryNodes.get((i + 3)* ncols + j)).setText("0");
+				((ImageView)gInventoryNodes.get(i * ncols + j)).setImage(null);
+				((Label)gInventoryNodes.get((i + 3)* ncols + j)).setText("0");
 			}
 		}
-		
-		for(int i = 0; i < nrows; i++) { //Clear
+
+		OpenAddressingHashTable<String, SetOfBlocks> inv = im.getInventory();
+		int count = 0;
+		for(int i = 0; i < nrows; i++) {
 			for (int j = 0; j < ncols; j++) {
-				((ImageView)inventoryNodes.get(i * ncols + j)).setImage(null);
-				((Label)inventoryNodes.get((i + 3)* ncols + j)).setText("0");
+				if(inv.getItems()[count] != null && !inv.getDELETED()[count]) {
+					String typeOfBlocks = inv.getItems()[count].getKey();
+					typeOfBlocks = typeOfBlocks.substring(0, typeOfBlocks.length() - 5);
+					if(typeOfBlocks.equals("Chest")) {
+						((ImageView)gInventoryNodes.get(i * ncols + j)).setImage(new Image(new File("images" + File.separator + typeOfBlocks + ".gif").toURI().toString()));
+					} else {
+						((ImageView)gInventoryNodes.get(i * ncols + j)).setImage(new Image(new File("images" + File.separator + typeOfBlocks + ".png").toURI().toString()));
+					}
+					((Label)gInventoryNodes.get((i + 3)* ncols + j)).setText(inv.getItems()[count].getValue().getBlocks()+"");
+				}
+				count++;
 			}
 		}
-		
-		/*for (int i = 0; i < inventoryNodes.size(); i++) {
-			System.out.println(inventoryNodes.get(i));
-			if(inventoryNodes.get(i) instanceof ImageView) {
-				((ImageView)(inventoryNodes.get(i))).setImage(new Image(new File("images" + File.separator + typeOfBlockChoiceBox.getItems().get(i) + ".png").toURI().toString()));
-			}
-		}*/
-		
 	}
 }
+

@@ -91,13 +91,15 @@ public class OpenAddressingHashTable<K, V> implements IHashTable<K, V> {
 
 			boolean found = false;
 			while (visited.size() < m) {
-				if(!search && possibleDeletedSlot == -1 && DELETED[totalHash] && !items[totalHash].getKey().equals(key)) {
+				if(!search && possibleDeletedSlot == -1 && DELETED[totalHash] && items[totalHash].getKey().equals(key)) {
 					possibleDeletedSlot = totalHash;
+					break;
 				}
 				if(items[totalHash] == null && !search) {
 					found = true;
 					break;
 				} else if( search && items[totalHash] != null && items[totalHash].getKey().equals(key)) {
+					//FIXME herererere
 					found = true;
 					break;
 				}
@@ -108,13 +110,12 @@ public class OpenAddressingHashTable<K, V> implements IHashTable<K, V> {
 				}
 			}
 
-			if(found) {
-				hashCode = totalHash;
-			} else if(possibleDeletedSlot != -1) {
+			if(possibleDeletedSlot != -1) {
 				hashCode = possibleDeletedSlot;
+			} else if(found) {
+				hashCode = totalHash;
 			}
 		}
-
 		return hashCode;
 	}
 }
