@@ -29,7 +29,7 @@ public class OpenAddressingHashTable<K, V> implements IHashTable<K, V> {
 	@Override
 	public V remove(K key) {
 		int h = hashFunction(true, key);
-		if(h != -1) {
+		if(h != -1 && !DELETED[h]) {
 			DELETED[h] = true;
 			storedItems--;
 			return items[h].getValue();
