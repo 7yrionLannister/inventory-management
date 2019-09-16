@@ -11,22 +11,22 @@ public class InventoryManager {
 	private Queue<Stack<SetOfBlocks>> quickAccessBars2;
 	private ArrayList<String> randomlyGeneratedKeys;
 
-	public final static IntegerTranslator<String> integerTranslator = new IntegerTranslator<String>() {
+	public final static LongTranslator<String> longTranslator = new LongTranslator<String>() {
 		/**The method allows to obtain an integer representation of key
 		 * @param The String to convert to a natural number<br>Characters in key must be in <b>ASCII{46..122}</b> set
 		 * @return An integer representing key
 		 * @throws IllegalArgumentException if key contains characters not allowed
 		 * */
 		@Override
-		public int keyToInteger(String key) {
-			int length = key.length();
-			int intKey = 0;
+		public long keyToLong(String key) {
+			long length = key.length();
+			long intKey = 0;
 			for (int i = 0; i < length; i++) {
 				char chari = key.charAt(i);
 				if(chari > 122 || chari < 46) {
 					throw new IllegalArgumentException("The key contains an invalid character: " + chari);
 				} else {
-					intKey += chari*Math.pow(128, length - i - 1);
+					intKey += chari*Math.pow(76, length - i - 1);
 				}
 			}
 			return intKey;
@@ -36,8 +36,8 @@ public class InventoryManager {
 	private SecureRandom sr;
 
 	public InventoryManager() {
-		keyRegistry = new OpenAddressingHashTable<>(27, integerTranslator);
-		inventory = new OpenAddressingHashTable<>(27, integerTranslator);
+		keyRegistry = new OpenAddressingHashTable<>(27, longTranslator);
+		inventory = new OpenAddressingHashTable<>(27, longTranslator);
 		quickAccessBars = new Queue<>();
 		quickAccessBars2 = new Queue<>();
 		randomlyGeneratedKeys = new ArrayList<>();
@@ -63,7 +63,15 @@ public class InventoryManager {
 			keyRegistry.add(typeOfBlock, registryStack);
 			quickAccessBars.enqueue(registryStack);
 		}
-		generateKeyAndAdd(typeOfBlock, registryStack, amount);
+		try {
+			if(registryStack != null && inventory.getStoredItems() < inventory.getItems().length) {
+				generateKeyAndAdd(typeOfBlock, registryStack, amount);
+			}
+		} catch(IllegalStateException ise) {
+			System.out.println("FULL");
+			SetOfBlocks sob = registryStack.pop();
+			inventory.remove(sob.getTypeOfBlocks());
+		}
 	}
 
 	/**The method allows to take blocks out of the current quick access bar and therefore of the inventory
@@ -71,19 +79,19 @@ public class InventoryManager {
 	 * @throws IllegalArgumentException if the requested number of blocks exceeds the number of blocks in the inventory
 	 * */
 	public void consume(int amount) throws Exception {
-		//TODO check if top is Dirt or Dirt+random
 		Stack<SetOfBlocks> currentQAB = quickAccessBars.front();
 		SetOfBlocks topOfFront = currentQAB.top();
 		SetOfBlocks backup = topOfFront;
 		int toConsume = Math.min(topOfFront.getBlocks(), amount);
 		int remainingToConsume = amount - toConsume;
 		topOfFront.consume(toConsume);
-		
+
 		String typeOfBlocks = topOfFront.getTypeOfBlocks();
-		
+
 		if(topOfFront.getBlocks() == 0) {
 			topOfFront = currentQAB.pop();
 			randomlyGeneratedKeys.remove(typeOfBlocks);
+			inventory.remove(typeOfBlocks);
 			topOfFront = currentQAB.top();
 		}
 		if(topOfFront == null) {
@@ -91,7 +99,6 @@ public class InventoryManager {
 		}
 		if(currentQAB.isEmpty()) {
 			//It's not possible to continue consuming
-			//inventory.remove(typeOfBlocks);System.out.println("remuevo de inventario: "+typeOfBlocks);
 			keyRegistry.remove(typeOfBlocks.substring(0, topOfFront.getTypeOfBlocks().length()-5));
 			quickAccessBars.dequeue();
 			if(quickAccessBars.isEmpty()) { //exchange the queues if the main of them gets empty
@@ -177,7 +184,7 @@ public class InventoryManager {
 	public void nextQuickAccessBar() throws Exception {
 		Stack<SetOfBlocks> current = quickAccessBars.dequeue(); //temporal to pass elements in the stack to the hash table
 		quickAccessBars2.enqueue(current); //to maintain order
-		
+
 		if(quickAccessBars.isEmpty()) { //exchange the queues if the main of them gets empty
 			Queue<Stack<SetOfBlocks>> temp = quickAccessBars;
 			quickAccessBars = quickAccessBars2;

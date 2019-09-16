@@ -8,9 +8,9 @@ public class OpenAddressingHashTable<K, V> implements IHashTable<K, V> {
 	private HNode<K, V>[] items; //The array or table
 	private boolean[] DELETED; 
 	private int storedItems;
-	private IntegerTranslator<K> integerTranslator;
+	private LongTranslator<K> integerTranslator;
 
-	public OpenAddressingHashTable(int size, IntegerTranslator<K> it) {
+	public OpenAddressingHashTable(int size, LongTranslator<K> it) {
 		items = (HNode<K, V>[])new HNode[size];
 		DELETED = new boolean[size];
 		storedItems = 0;
@@ -29,7 +29,7 @@ public class OpenAddressingHashTable<K, V> implements IHashTable<K, V> {
 	@Override
 	public V remove(K key) {
 		int h = hashFunction(true, key);
-		if(h != -1 && !DELETED[h]) {
+		if(h != -1) {
 			DELETED[h] = true;
 			storedItems--;
 			return items[h].getValue();
@@ -73,33 +73,38 @@ public class OpenAddressingHashTable<K, V> implements IHashTable<K, V> {
 	 * */
 	public int hashFunction(boolean search, K key) {
 		int hashCode = -1;
-		int intKey = integerTranslator.keyToInteger(key);
+		long intKey = integerTranslator.keyToLong(key);
 		int m = items.length;
 
-		int hash1 = ((int) (m*((intKey*A) % 1))) % items.length;
+		int hash1 = ((int) (m*((intKey*A) % 1))) % m;
 
-		if((search && items[hash1] != null && items[hash1].getKey().equals(key)) 
-				|| (!search && items[hash1] == null || (DELETED[hash1] && items[hash1].getKey().equals(key)))) {
+		if((search && items[hash1] != null && (items[hash1].getKey().equals(key) ||
+				(key.toString().length() > 5 && items[hash1].getKey().toString().contains(key.toString().substring(0, key.toString().length()-5))))
+				&& !DELETED[hash1]) 
+				|| (!search && (items[hash1] == null || DELETED[hash1]))) {
 			hashCode = hash1;
 		} else {
-			int hash2 = intKey % m;
+			long hash2 = (((long)(Math.PI*intKey*(A+1))) % m);
 			int totalHash = (hash1+(int)(A*hash2)) % m;
-			int i = 1;
+			long i = 1;
 			ArrayList<Integer> visited = new ArrayList<>();
 			visited.add(hash1);
 			int possibleDeletedSlot = -1;
 
 			boolean found = false;
 			while (visited.size() < m) {
-				if(!search && possibleDeletedSlot == -1 && DELETED[totalHash] && items[totalHash].getKey().equals(key)) {
+				//TODO remove line
+				//System.out.println(visited.size() + "..." + totalHash + " ("+hash1+","+hash2+") - key = "+ key);
+				if(!search && possibleDeletedSlot == -1 && DELETED[totalHash]) {
 					possibleDeletedSlot = totalHash;
 					break;
 				}
 				if(items[totalHash] == null && !search) {
 					found = true;
 					break;
-				} else if( search && items[totalHash] != null && items[totalHash].getKey().equals(key)) {
-					//FIXME herererere
+				} else if( search && items[totalHash] != null && !DELETED[totalHash] && 
+						(items[totalHash].getKey().equals(key) ||
+								(key.toString().length() > 5 && items[totalHash].getKey().toString().contains(key.toString().substring(0, key.toString().length()-5))))) {
 					found = true;
 					break;
 				}

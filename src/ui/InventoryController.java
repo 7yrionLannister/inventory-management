@@ -17,6 +17,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import model.HNode;
 import model.InventoryManager;
 import model.OpenAddressingHashTable;
 import model.SetOfBlocks;
@@ -185,6 +186,7 @@ public class InventoryController {
 		}
 
 		OpenAddressingHashTable<String, SetOfBlocks> inv = im.getInventory();
+		
 		int count = 0;
 		for(int i = 0; i < nrows; i++) {
 			for (int j = 0; j < ncols; j++) {

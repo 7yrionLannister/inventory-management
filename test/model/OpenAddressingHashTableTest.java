@@ -9,15 +9,15 @@ import org.junit.jupiter.api.Test;
 public class OpenAddressingHashTableTest {
 	private OpenAddressingHashTable<Integer, Integer> ht;
 
-	private IntegerTranslator<Integer> it = new IntegerTranslator<Integer>() {
+	private LongTranslator<Integer> it = new LongTranslator<Integer>() {
 		@Override
-		public int keyToInteger(Integer key) {
+		public long keyToLong(Integer key) {
 			return key;
 		}
 	};
 
 	private void setupStage1() {
-		ht = new OpenAddressingHashTable<>(1000, it);
+		ht = new OpenAddressingHashTable<>(400, it);
 	}
 
 	@Test
@@ -46,10 +46,10 @@ public class OpenAddressingHashTableTest {
 	public void addAndSearchTest() {
 		setupStage1();
 		for(int i = 0; i < ht.getItems().length; i++) {
-			int h = ht.hashFunction(false, i);
+			int h = ht.hashFunction(false, (i+1));
 			assertTrue(h >= 0 && h < ht.getItems().length, "The hash function should return valid table slots: ("+h+")");
-			ht.add(i, (int) (Math.random()*80));
-			assertNotNull(ht.search(i), "The element was just added so it should have been found");
+			ht.add((i+1), (int) (Math.random()*80));
+			assertNotNull(ht.search((i+1)), "The element was just added so it should have been found");
 		}
 		try {
 			ht.add(1, 2);
@@ -63,8 +63,8 @@ public class OpenAddressingHashTableTest {
 	public void removeTest() {
 		addAndSearchTest();
 		for (int i = 0; i < ht.getItems().length; i++) {
-			ht.remove(i);
-			assertNull(ht.search(i), "The element with key i was removed so it should not have been found");
+			ht.remove((i+1));
+			assertNull(ht.search((i+1)), "The element with key (i+1) was removed so it should not have been found");
 		}
 	}
 }
